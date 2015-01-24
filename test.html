@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+<input id="test" type="button" value="test">
+
+<script type="text/javascript" src="Main.js"></script>
+<script type="text/javascript" src="barnbidrag.js"></script>
+<script type="text/javascript" src="Household.js"></script>
+<script type="text/javascript" src="Person.js"></script>
+<script type="text/javascript">
+
+    marginalCalc.run(function(houseHold, barnBidrag){
+        this.ready = function(){
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 22));
+        };
+        document.getElementById("test").onclick = function(){
+
+            console.log(barnBidrag);
+            barnBidrag.getBarnBidrag();
+        };
+
+
+
+    })
+</script>
+</body>
+</html>
