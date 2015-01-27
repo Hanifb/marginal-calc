@@ -1,0 +1,470 @@
+<html>
+<head>
+    <title>Titel</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="Main.js"></script>
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/jquery.canvasjs.min.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
+    <style>
+        #skeleton {
+            display: none;
+        }
+
+        .person-icon {
+            height: 200px;
+            background-image: url("img/person.png");
+            background-size: contain;
+        }
+
+        .kid-icon {
+            background-image: url("img/kid.png");
+        }
+
+        .remove-person, .person.first-person:hover .remove-person {
+            display: none;
+        }
+
+        .person:hover .remove-person {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                <li role="presentation" class="active"><a data-toggle="tab" href="#kalkylator">Kalkylator</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#about">Om</a></li>
+                <li role="presentation"><a data-toggle="tab" href="#kontakt">Kontakt</a></li>
+            </ul>
+        </nav>
+        <h3 class="text-muted">Marginaleffektskalkylator</h3>
+    </div>
+    <hr>
+    <div class="tab-content">
+        <div id="about" class="tab-pane fade"></div>
+        <div id="kontakt" class="tab-pane fade"></div>
+        <div id="kalkylator" class="tab-pane fade in active">
+            <div class="jumbotron">
+                <h1>Marginaleffektskalkylator</h1>
+
+                <p class="lead">Marginaleffekt är ett begrepp inom nationalekonomin som kan definieras på flera sätt,
+                    dels
+                    som
+                    skillnaden mellan förvärvsinkomstens och den disponibla inkomstens ökning, och dels som återstående
+                    konsumtionsutrymme (den delen av lönen som individen själv får behålla) efter skatter, avgifter
+                    (arbetsgivaravgift, sociala avgifter), transfereringar (olika bidrag) och nödvändiga avgifter
+                    (arbetsresor,
+                    barnomsorg m.m.). Även sparande och den skatt på sparande som tillkommer kan inkluderas i
+                    beräkningen av
+                    marginaleffekten.</p>
+
+                <p><a class="btn btn-lg btn-success smoothscroll" href="#calc" role="button">Räkna ut</a></p>
+            </div>
+            <a name="calc"></a>
+
+            <h3 class="text-muted">Steg 1:</h3>
+
+            <p>För att räkna ut din marginaleffekt så måste bidragskalkyler göras, då behöver du mata in hur ditt
+                hushåll
+                ser
+                ut.</p>
+
+            <div id="persons" class="watchChange form-horizontal">
+            </div>
+            <div class="">
+                <input class="btn btn-default" name="" type="button" value="Lägg till person" id="addPerson">
+
+                <div id="skeleton" class="person row">
+                    <div class="col-md-2 person-icon"></div>
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">Ålder</label>
+
+                            <div class="col-md-8">
+                                <input id="age" class="form-control age" name="age" type="range" value="25">
+                            </div>
+                            <div class="col-md-2 age-display"><span class="value">25</span> år</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-1 control-label">Lön</label>
+
+                            <div class="col-md-8">
+                                <input class="income form-control" name="income" value="0" type="range" min="0"
+                                       max="80000">
+                            </div>
+                            <div class="col-md-2 income-display"><span class="value">0</span> kr</div>
+                        </div>
+                        <div class="row col-md-10">
+                            <input type="button" class="center-block btn btn-danger remove-person" value="Ta bort">
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+            <h3 class="text-muted">Steg 2:</h3>
+
+            <p>Skriv in din bostadsyta och boendekostnad (hyra alt. avgift till förening och uppvärming)</p>
+
+            <div id="data" class="form-horizontal watchChange row">
+                <div class="form-group">
+                    <label for="rent" class="col-sm-1 control-label">Hyra</label>
+
+                    <div class="col-md-3">
+                        <input id="rent" class="form-control" type="text" value="">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+                <div class="form-group">
+                    <label for="sqmtrs" class="col-sm-1 control-label">Yta</label>
+
+                    <div class="col-md-3">
+                        <input id="sqmtrs" class="form-control" type="text" value="50">
+
+                    </div>
+                    <div class="col-md-2">m2</div>
+                </div>
+
+
+            </div>
+            <h3 class="text-muted">Resultat:</h3>
+
+            <div class="well"><h3><span id="total">0</span> kr</h3></div>
+            <div id="result" class="form-horizontal">
+                <div class="form-group">
+                    <label for="afterTax" class="col-sm-2 control-label">Lön - efter skatt</label>
+
+                    <div class="col-md-3">
+                        <input value="0" class="disabled form-control" disabled="disabled" id="afterTax">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Jobbskatteavdrag</label>
+
+                    <div class="col-md-3">
+                        <input value="0" class="disabled form-control" disabled="disabled" id="jsk">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Barnbidrag</label>
+
+                    <div class="col-md-3">
+                        <input value="0" class="disabled form-control" disabled="disabled" id="barnbidrag">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Bostadsbidrag</label>
+
+                    <div class="col-md-3">
+                        <input value="0" class="disabled form-control" disabled="disabled" id="bostadsbidrag">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Socialbidrag</label>
+
+                    <div class="col-md-3">
+                        <input value="0" class="disabled form-control" disabled="disabled" id="socialbidrag">
+                    </div>
+                    <div class="col-md-2">kr</div>
+                </div>
+
+            </div>
+            <h3 class="text-muted">Graf</h3>
+            <p>Dessa grafer simulerar inkomster för första personen i hushållet från 0 till 60 000 kr</p>
+            <button id="simulate" class="btn btn-primary">Simulera</button>
+            <div id="progress" class="hide progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                    <span class="sr-only">Running Simulation</span>
+                </div>
+            </div>
+
+            <div class="graf" id="marginalgraf" style="height:400px;"></div>
+            <div class="graf" id="marginalTaxgraf" style="height:400px;"></div>
+            <div class="graf" id="incomegraf" style="height: 400px;"></div>
+        </div>
+    </div>
+    <hr>
+
+    <div id="footer">
+
+        <p>Skapad av Hanif Bali. © 2014 <a title="Do What the Fuck You Want to Public License"
+                                           href="http://www.wtfpl.net/">WTFPL</a> | <span class="text-muted">Detta räkneexempel tillägnas Fredrik Schulte.</span>
+        </p>
+
+    </div>
+</div>
+<script type="text/javascript">
+    marginalCalc.scriptLoader.addScripts([
+        "household",
+        "bostadsbidrag",
+        "tax",
+        "socialbidrag",
+        "barnbidrag"
+    ]);
+
+    marginalCalc.run(function (houseHold, tax, socialBidrag, barnBidrag, bostadsBidrag) {
+        this.ready = function () {
+            var that = this;
+
+            $("#addPerson").click(function () {
+
+                var $skeleton = $('#skeleton').clone();
+                $skeleton.removeAttr('id');
+
+                if (houseHold.getGrownups().length == 0) {
+                    $skeleton.addClass('first-person');
+                    $skeleton.find('.age').attr('min', 18);
+                }
+                if (houseHold.getGrownups().length > 1) {
+                    $skeleton.find(".age").val("12");
+                }
+                $skeleton.appendTo('#persons').find('.age').change();
+                that.buildHouseHold();
+            });
+
+            $(document).on('change', '.age', function () {
+
+                if ($(this).val() < 18) {
+                    $(this).parents(".person").find(".income").val(0).hide();
+                    $(this).parents(".person").find(".person-icon").addClass("kid-icon");
+                } else {
+                    $(this).parents(".person").find(".income").val(0).show().trigger("change");
+                    $(this).parents(".person").find(".person-icon").removeClass("kid-icon");
+                }
+
+                $(this).parents(".person").find(".age-display .value").html($(this).val())
+            });
+            $(document).on('change', '.income', function () {
+                $(this).parents(".person").find(".income-display .value").html($(this).val())
+            });
+            $(document).on('change', '.watchChange input', function () {
+                that.buildHouseHold();
+            });
+            $(document).on('click', '.remove-person', function () {
+                $(this).parents('.person').hide('slow', function () {
+                    $(this).remove();
+                    that.buildHouseHold();
+                });
+
+            });
+            $("#simulate").click(function(){
+                that.runSimulations();
+            });
+        };
+        this.buildHouseHold = function () {
+
+            /*
+             * Build Household
+             */
+            houseHold.persons = [];
+
+            $("#persons .person").each(function (i, $personContext) {
+
+                var salary = jQuery(".income", $personContext).val();
+                var age = $(".age", $personContext).val();
+                salary = Math.ceil(salary / 100) * 100
+
+                var person = new Person(salary, age);
+                houseHold.addPerson(person);
+            });
+
+            /*
+             * Build House
+             */
+            var rent = $("#rent").val();
+
+            var sqmtrs = $("#sqmtrs").val();
+
+
+            var house = new Housing(sqmtrs, rent);
+            houseHold.addHouse(house);
+            /*
+             Om vi inte har en hyra kan vi räkna ut en genomsnittlig hyra
+             */
+            if (!rent) {
+                houseHold.getHouse().setRent(houseHold.getHouse().avgRent(houseHold));
+                $("#rent").attr("placeholder", houseHold.getHouse().getRent());
+
+            }
+
+            console.log(houseHold.totalCalc());
+            $("#barnbidrag").val(barnBidrag.totalCalc());
+            $("#bostadsbidrag").val(bostadsBidrag.getBostadsBidrag());
+            $("#socialbidrag").val(socialBidrag.totalCalc());
+            $("#afterTax").val(houseHold.totalCalc() + tax.totalCalc());
+            $("#jsk").val(Math.round(tax.totalJSK() / 12));
+
+
+            $("#total").html(marginalCalc.totalCalc());
+            $(".graf").empty();
+
+        };
+
+        this.runSimulations = function () {
+            var marginalGraphData = new Array(),
+                    graphSalaryData = new Array(),
+                    graphBostadsbidrag = new Array(),
+                    graphBarnBidragData = new Array(),
+                    graphSocialbidrag = new Array(),
+                    marginalTaxGraph = new Array();
+            var labelData = new Array();
+            var total = marginalCalc.totalCalc();
+
+
+            var person = houseHold.getGrownups()[0];
+            if (!person) {
+                return;
+            }
+            person.salary = 0;
+            person.income = 0;
+            var oldtotal = marginalCalc.totalCalc();
+            var salaryIncrement = 100;
+            var oldTax = houseHold.totalCalc() + tax.totalCalc();
+            for (var a = 0; a < (60000 / salaryIncrement); a++) {
+                person.salary = person.salary + salaryIncrement;
+                person.income = person.income + salaryIncrement;
+                labelData[a] = person.salary;
+                var newtotal = marginalCalc.totalCalc();
+                var marginal = (1 - ((newtotal - oldtotal) / salaryIncrement)) * 100;
+
+                oldtotal = newtotal;
+                var newTax = houseHold.totalCalc() + tax.totalCalc();
+
+                var marginalTax = (1 -(newTax - oldTax) / salaryIncrement) * 100;
+                oldTax = newTax;
+
+                marginalGraphData[a] = {x: person.salary, y: marginal};
+                marginalTaxGraph[a] = {x: person.salary, y: marginalTax};
+                graphSalaryData[a] = {x: person.salary, y: houseHold.totalCalc() + tax.totalCalc()};
+
+                if (barnBidrag.totalCalc())
+                    graphBarnBidragData[a] = {x: person.salary, y: barnBidrag.totalCalc()};
+                if (bostadsBidrag.totalCalc())
+                    graphBostadsbidrag[a] = {x: person.salary, y: bostadsBidrag.totalCalc()};
+                if (socialBidrag)
+                    graphSocialbidrag[a] = {x: person.salary, y: socialBidrag.totalCalc()};
+
+            }
+
+
+
+            $("#marginalgraf").CanvasJSChart({
+                title: {
+                    text: "Marginaleffekt på löneökning"
+                },
+                data: [
+
+                    {
+                        name: "Marginaleffekt",
+                        type: "line",
+                        dataPoints: marginalGraphData
+                    }
+                ]
+            });
+            $("#marginalTaxgraf").CanvasJSChart({
+                title: {
+                    text: "Marginalskatt på löneökning"
+                },
+                data: [
+
+                    {
+                        name: "Marginaleffekt",
+                        type: "line",
+                        dataPoints: marginalTaxGraph
+                    }
+                ]
+            });
+
+            $("#incomegraf").CanvasJSChart({
+                title: {
+                    text: "Fördelning av inkomster"
+
+                },
+                data: [
+
+                    {
+                        type: "stackedArea100",
+                        legendText: "Lön efter skatt",
+                        showInLegend: "true",
+                        toolTipContent: "Lön {x} kr: {y} kr efter skatt",
+                        dataPoints: graphSalaryData
+                    },
+                    {
+                        type: "stackedArea100",
+                        legendText: "Barnbidrag",
+                        showInLegend: "true",
+                        toolTipContent: "Lön {x} kr: Barnbidrag {y} kr",
+                        dataPoints: graphBarnBidragData
+                    },
+                    {
+                        type: "stackedArea100",
+                        legendText: "Bostadsbidrag",
+                        toolTipContent: "Lön {x} kr: Bostadsbidrag {y} kr",
+                        showInLegend: "true",
+                        dataPoints: graphBostadsbidrag
+                    },
+                    {
+                        type: "stackedArea100",
+                        legendText: "Socialbidrag",
+                        toolTipContent: "Lön {x} kr: Socialbidrag {y} kr",
+                        showInLegend: "true",
+                        dataPoints: graphSocialbidrag
+                    }
+                ]
+            });
+
+            //$("#progress").delay(10000).addClass("hide");
+            $("#totalt").val(total);
+
+
+        }
+
+    });
+
+
+    function runSimulations(houseHold, tax) {
+
+
+    }
+
+    $('a[href^="#"].smoothscroll').on('click', function (e) {
+
+        // prevent default anchor click behavior
+        e.preventDefault();
+
+        // store hash
+        var hash = this.hash;
+
+        // animate
+        $('html, body').animate({
+            scrollTop: $('a[name="' + this.hash.replace('#', '') + '"]').offset().top
+        }, 300, function () {
+
+            // when done, add hash to url
+            // (default click behaviour)
+            window.location.hash = hash;
+
+        });
+    });
+</script>
+
+</body>
+</html>

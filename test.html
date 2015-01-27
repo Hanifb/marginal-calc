@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Test</title>
+    <script type="text/javascript" src="Main.js"></script>
+    <!--<script type="text/javascript" src="modules/barnbidrag.js"></script>
+    <script type="text/javascript" src="modules/household.js"></script>
+    <script type="text/javascript" src="modules/bostadsbidrag.js"></script>
+    <script type="text/javascript" src="modules/houseing.js"></script>
+    <script type="text/javascript" src="modules/socialbidrag.js"></script>
+    <script type="text/javascript" src="modules/tax.js"></script>
+    <script type="text/javascript" src="modules/person.js"></script>
+    -->
+    <script async="false" type="text/javascript">
+        marginalCalc.scriptLoader.addModules([
+            "barnbidrag",
+            "household",
+            "socialbidrag",
+            "bostadsbidrag",
+            "tax"
+        ]);
+        </script>
+</head>
+<body>
+<input id="test" type="button" value="test">
+
+
+<script type="text/javascript">
+    marginalCalc.run(function(houseHold, barnBidrag){
+        this.ready = function(){
+            houseHold.addHouse(new Housing(50, 4000, true));
+            houseHold.addPerson(new Person(20000, 10));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 22));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 10));
+            houseHold.addPerson(new Person(0, 10));
+            barnBidrag.getBarnBidrag();
+            console.log(marginalCalc.totalCalc());
+
+        };
+
+
+    })
+</script>
+</body>
+</html>
