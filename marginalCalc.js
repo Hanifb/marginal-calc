@@ -115,14 +115,21 @@ var marginalCalc = {
     $totalCalc: function() {
         var totalCalc = [];
 
+        var totalCalcModules = this.modulePriority.sort(function (a, b) {
+            return a.priority - b.priority
+        });
+
         var totalSum = 0;
         for (var i = 0; i < totalCalcModules.length; i++) {
             var moduleName = totalCalcModules[i].moduleName;
             var module = this.execModule(moduleName, this.modules[moduleName]);
             totalSum += totalCalc[moduleName] = module.totalCalc(totalSum);
         }
-        totalCalc["totalCalc"] = module.totalCalc(totalSum);
-        return totalSum;
+        totalCalc["totalCalc"] = totalSum;
+        return totalCalc;
+
+    },
+    marginalCalc: function(newVal, oldVal){
 
     },
 
@@ -132,9 +139,6 @@ var marginalCalc = {
      */
     totalCalc: function (returnObj) {
 
-        var totalCalcModules = this.modulePriority.sort(function (a, b) {
-            return a.priority - b.priority
-        });
         if(returnObj){
             return this.$totalCalc();
         } else {
