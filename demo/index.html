@@ -10,7 +10,7 @@
     <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <meta charset="UTF-8">
-    <script type="text/javascript" src="Main.js"></script>
+    <script type="text/javascript" src="../marginalCalc.js"></script>
     <script type="text/javascript" src="lib/jquery.js"></script>
     <script type="text/javascript" src="lib/jquery.canvasjs.min.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
@@ -23,12 +23,12 @@
 
         .person-icon {
             height: 200px;
-            background-image: url("img/person.png");
+            background-image: url("../img/person.png");
             background-size: contain;
         }
 
         .kid-icon {
-            background-image: url("img/kid.png");
+            background-image: url("../img/kid.png");
         }
 
         .remove-person, .person.first-person:hover .remove-person {
@@ -212,6 +212,7 @@
     </div>
 </div>
 <script type="text/javascript">
+    marginalCalc.config.url = "../";
     marginalCalc.scriptLoader.addScripts([
         "household",
         "bostadsbidrag",
@@ -439,11 +440,6 @@
 
     });
 
-
-    function runSimulations(houseHold, tax) {
-
-
-    }
 
     $('a[href^="#"].smoothscroll').on('click', function (e) {
 
