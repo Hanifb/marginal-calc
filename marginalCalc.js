@@ -39,7 +39,7 @@ var marginalCalc = {
     /**
      * Waits for nod from scriptloader.
      */
-    waitForLoad: function(){
+    waitForLoad: function () {
         var that = this;
         if (this.scriptLoader.complete === true) {
 
@@ -47,7 +47,9 @@ var marginalCalc = {
             return;
         }
         console.log("skipping");
-        this.timeout = setTimeout(function(){that.waitForLoad()}, 1000);
+        this.timeout = setTimeout(function () {
+            that.waitForLoad()
+        }, 1000);
     },
     /**
      * Runs the main function, may be used to skip the nod from {Scriptloader}.
@@ -128,6 +130,11 @@ var marginalCalc = {
         return totalSum;
 
     },
+
+    config: {
+        url: "",
+        moduleFolder: "modules/"
+    },
     /**
      * Loads the scripts
      */
@@ -139,9 +146,9 @@ var marginalCalc = {
          * Called by the loaded Script to give nod to the calculator that it may run and create the modules.
          * @param module
          */
-        loadComplete: function(module){
+        loadComplete: function (module) {
             this.loaded.push(module);
-            if(this.promisedModules.length === this.loaded.length){
+            if (this.promisedModules.length === this.loaded.length) {
                 this.complete = true;
             }
         },
@@ -157,7 +164,7 @@ var marginalCalc = {
                 var module = modules[i];
                 var fileref = document.createElement('script');
                 fileref.type = "text/javascript";
-                fileref.src = "modules/" + module + ".js";
+                fileref.src = marginalCalc.config.url + marginalCalc.config.moduleFolder + module + ".js";
                 fileref.async = true;
                 document.getElementsByTagName("head")[0].appendChild(fileref);
             }
