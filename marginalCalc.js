@@ -111,23 +111,36 @@ var marginalCalc = {
         });
         return args;
     },
-    /**
-     * Runs totalCalc function on every module based on its priority. Sums the result.
-     * @returns {number} Total sum of modules.
-     */
-    totalCalc: function () {
 
-        var totalCalcModules = this.modulePriority.sort(function (a, b) {
-            return a.priority - b.priority
-        });
+    $totalCalc: function() {
+        var totalCalc = [];
 
         var totalSum = 0;
         for (var i = 0; i < totalCalcModules.length; i++) {
             var moduleName = totalCalcModules[i].moduleName;
             var module = this.execModule(moduleName, this.modules[moduleName]);
-            totalSum += module.totalCalc(totalSum);
+            totalSum += totalCalc[moduleName] = module.totalCalc(totalSum);
         }
+        totalCalc["totalCalc"] = module.totalCalc(totalSum);
         return totalSum;
+
+    },
+
+    /**
+     * Runs totalCalc function on every module based on its priority. Sums the result.
+     * @returns {number} Total sum of modules.
+     */
+    totalCalc: function (returnObj) {
+
+        var totalCalcModules = this.modulePriority.sort(function (a, b) {
+            return a.priority - b.priority
+        });
+        if(returnObj){
+            return this.$totalCalc();
+        } else {
+            return this.$totalCalc()["totalCalc"];
+        }
+
 
     },
 
