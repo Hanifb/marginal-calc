@@ -1,10 +1,28 @@
-marginalCalc.addModule("Tax", function(houseHold){
+console.log("tax");
+marginalCalc.addModule("tax", function(houseHold){
     const PBB = 44400; // 2014 Prisbasbelopp
     const IBB = 56900; // 2014 Inkomstbasbelopp
     const SKIKT1 = 420800; // 2014 Statlig inkomstskatt, brytpunkt
     const SKIKT2 = 602600; //2014 Värnskatt, brytpunkt
-    const KI = 0.30; //Kommunalskatt
+    const KI = 0.32; //Kommunalskatt
 
+    this.totalCalc = function(){
+        var grownUps = houseHold.getPersons();
+        var totalTax = 0;
+        for(var i = 0; i < grownUps.length; i++){
+           totalTax -= this.totalTax(grownUps[i]) / 12;
+        }
+        return Math.round(totalTax);
+    };
+
+    this.totalJSK = function(){
+        var grownUps = houseHold.getPersons();
+        var jsk = 0;
+        for(var i = 0; i < grownUps.length; i++){
+            jsk += this.jobbskatteavdrag(grownUps[i]);
+        }
+        return jsk;
+    };
     this.totalTax = function (person) {
         var JA = Math.round(this.jobbskatteavdrag(person));
         var GA = this.grundAvdrag(person);
@@ -164,4 +182,6 @@ marginalCalc.addModule("Tax", function(houseHold){
         }
 
     }
-});
+},200);
+
+marginalCalc.scriptLoader.loadComplete("tax");

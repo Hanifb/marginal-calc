@@ -1,4 +1,4 @@
-marginalCalc.addModule("socialbidrag", function(houseHold, housing, barnbidrag){
+marginalCalc.addModule("socialBidrag", function (houseHold, tax, barnBidrag, studieBidrag, bostadsBidrag) {
     this.commonOutcome = function () {
         switch (houseHold.numberOfPersons()) {
             case 0:
@@ -37,7 +37,7 @@ marginalCalc.addModule("socialbidrag", function(houseHold, housing, barnbidrag){
 
     this.getRiksnorm = function () {
 
-        if(!houseHold.numberOfPersons()) {
+        if (!houseHold.numberOfPersons()) {
             return 0;
         }
         var sum = 0;
@@ -88,7 +88,7 @@ marginalCalc.addModule("socialbidrag", function(houseHold, housing, barnbidrag){
         // Vuxna
         if (houseHold.getGrownups().length == 1) {
             sum += 2950;
-        } else if(houseHold.getGrownups().length > 1){
+        } else if (houseHold.getGrownups().length > 1) {
             var grownupCount = houseHold.getGrownups().length;
             sum += 5320;
             grownupCount = grownupCount - 2;
@@ -96,17 +96,27 @@ marginalCalc.addModule("socialbidrag", function(houseHold, housing, barnbidrag){
                 sum += 2950;
             }
         }
-
+        console.log("Riksnorm",sum);
         return sum;
 
 
     };
 
-    this.calculate = function(){
-        if ((houseHold.getGrownupsIncome() +  bostadsbidrag.calculate()) + barnbidrag.getBarnBidrag() < this.getRiksnorm() + houseing.getHouseRent()) {
-            return Math.round((this.getRiksnorm() + houseing.getHouseRent()) - (houseHold.getGrownupsIncome() + bostadsbidrag.getBostadsBidrag() + barnbidrag.getBarnBidrag()));
+    this.totalCalc = function () {
+        if (
+            (
+            houseHold.totalCalc()
+            + tax.totalCalc()
+            + bostadsBidrag.totalCalc()
+            + barnBidrag.totalCalc())
+            + studieBidrag.totalCalc() <
+            this.getRiksnorm()
+            + houseHold.getHouse().getRent()
+        ) {
+            return Math.round((this.getRiksnorm() + houseHold.getHouse().getRent()) - (houseHold.totalCalc() + tax.totalCalc() + bostadsBidrag.totalCalc() + studieBidrag.totalCalc() + barnBidrag.totalCalc()));
         } else {
             return 0;
         }
     }
-});
+}, 200);
+marginalCalc.scriptLoader.loadComplete("socialbidrag");

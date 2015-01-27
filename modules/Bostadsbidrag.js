@@ -1,8 +1,11 @@
-marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
+marginalCalc.addModule("bostadsBidrag", function(houseHold){
+    this.totalCalc = function (){
+        return this.getBostadsBidrag();
+    };
     this.getBostadsBidrag = function () {
         var rentBenefit = 0;
-        var house = housing;
-        if (this.getKids().length) {
+        var house = houseHold.getHouse();
+        if (houseHold.getKids().length) {
 
 
             var fast = 0;
@@ -10,7 +13,7 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
             var sqmtrsLimit = 0;
             var floor = 0;
             var bottomlimit;
-            switch (this.getKids().length) {
+            switch (houseHold.getKids().length) {
                 case 1:
                     fast = 1500;
                     bottomlimit = 1400;
@@ -51,10 +54,10 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
             }
 
 
-            var rentCost = this.getHouseRent();
+            var rentCost = house.rent;
 
             if (house.sqmtrs > sqmtrsLimit) {
-                rentCost = rentCost - ((this.getHouseRent() / house.sqmtrs) * (house.sqmtrs - sqmtrsLimit));
+                rentCost = rentCost - ((house.getRent() / house.sqmtrs) * (house.sqmtrs - sqmtrsLimit));
 
                 if (rentCost < floor) {
                     rentCost = floor;
@@ -76,9 +79,9 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
 
             var housingBenefit = fast + rentBenefit;
 
-            if (this.getGrownups().length == 1) {
-                if (this.getGrownupsYearIncomeBeforeTax() > 117000) {
-                    housingBenefit = housingBenefit - (((this.getGrownupsYearIncomeBeforeTax() - 117000) / 12) * 0.2);
+            if (houseHold.getGrownups().length == 1) {
+                if (houseHold.getHouseHoldTaxableIncome() > 117000) {
+                    housingBenefit = housingBenefit - (((houseHold.getHouseHoldTaxableIncome() - 117000) / 12) * 0.2);
                 }
             } else {
                 houseHold.getGrownups().forEach(function (person) {
@@ -93,7 +96,7 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
 
             var under29 = false;
             // Barnlösa över 29 kan ej få bostadsbidrag
-            this.getGrownups().forEach(function (person) {
+            houseHold.getGrownups().forEach(function (person) {
                 if (person.age < 29) {
                     under29 = true;
                 }
@@ -102,9 +105,9 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
             if (!under29) {
                 return 0;
             }
-            rentCost = this.getHouseRent();
+            rentCost = house.getRent();
             if (house.sqmtrs > 60) {
-                rentCost = rentCost - ((this.getHouseRent() / house.sqmtrs) * (house.sqmtrs - 60));
+                rentCost = rentCost - ((house.getRent() / house.sqmtrs) * (house.sqmtrs - 60));
             }
 
             if (rentCost > 1800) {
@@ -121,12 +124,12 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
 
             }
             if (houseHold.getGrownups().length < 2) {
-                if (houseHold.getGrownupsYearIncomeBeforeTax() > 41000) {
-                    rentBenefit = rentBenefit - ((houseHold.getGrownupsYearIncomeBeforeTax() - 41000) * 0.33);
+                if (houseHold.getHouseHoldTaxableIncome() > 41000) {
+                    rentBenefit = rentBenefit - ((houseHold.getHouseHoldTaxableIncome() - 41000) * 0.33);
                 }
             } else {
-                if (houseHold.getGrownupsYearIncomeBeforeTax() > 58000) {
-                    rentBenefit = rentBenefit - ((houseHold.getGrownupsYearIncomeBeforeTax() - 58000) * 0.33);
+                if (houseHold.getHouseHoldTaxableIncome() > 58000) {
+                    rentBenefit = rentBenefit - ((houseHold.getHouseHoldTaxableIncome() - 58000) * 0.33);
                 }
             }
             housingBenefit = rentBenefit;
@@ -137,4 +140,6 @@ marginalCalc.addModule("bostadsbidrag", function(houseHold, housing){
         return Math.round(housingBenefit);
 
     };
-});
+},100);
+
+marginalCalc.scriptLoader.loadComplete("bostadsbidrag");
