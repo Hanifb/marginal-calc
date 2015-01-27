@@ -122,6 +122,7 @@ function Housing(sqmtrs, rent, rental) {
 
 function Person(salary, age) {
     var that = this;
+    this.langtidsSoc = true;
     this.age = parseInt(age);
     this.barnbidrag = 0;
     this.income = parseInt(salary);

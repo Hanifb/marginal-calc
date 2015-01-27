@@ -25,6 +25,7 @@
             height: 200px;
             background-image: url("../img/person.png");
             background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .kid-icon {
@@ -188,10 +189,12 @@
 
             </div>
             <h3 class="text-muted">Graf</h3>
+
             <p>Dessa grafer simulerar inkomster för första personen i hushållet från 0 till 60 000 kr</p>
             <button id="simulate" class="btn btn-primary">Simulera</button>
             <div id="progress" class="hide progress">
-                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100"
+                     aria-valuemin="0" aria-valuemax="100" style="width: 100%">
                     <span class="sr-only">Running Simulation</span>
                 </div>
             </div>
@@ -199,6 +202,7 @@
             <div class="graf" id="marginalgraf" style="height:400px;"></div>
             <div class="graf" id="marginalTaxgraf" style="height:400px;"></div>
             <div class="graf" id="incomegraf" style="height: 400px;"></div>
+            <div class="graf" id="incomegrafRelative" style="height: 400px;"></div>
         </div>
     </div>
     <hr>
@@ -212,7 +216,14 @@
     </div>
 </div>
 <script type="text/javascript">
+    /*
+     Byt url för att komma åt modulerna
+     */
     marginalCalc.config.url = "../";
+
+    /*
+     Ladda scripts
+     */
     marginalCalc.scriptLoader.addScripts([
         "household",
         "bostadsbidrag",
@@ -220,45 +231,67 @@
         "socialbidrag",
         "barnbidrag"
     ]);
+    /*
+     Byt icon om åldern är under 18
+     */
+    $(document).on('change', '.age', function () {
 
+        if ($(this).val() < 18) {
+            $(this).parents(".person").find(".income").val(0).hide();
+            $(this).parents(".person").find(".person-icon").addClass("kid-icon");
+        } else {
+            $(this).parents(".person").find(".income").val(0).show().trigger("change");
+            $(this).parents(".person").find(".person-icon").removeClass("kid-icon");
+        }
+
+        $(this).parents(".person").find(".age-display .value").html($(this).val())
+    });
+    /*
+     Koppla inkomstslidern till inkomstvisaren
+     */
+    $(document).on('change', '.income', function () {
+        $(this).parents(".person").find(".income-display .value").html($(this).val())
+    });
+    /*
+     Skapa en ny person, skapar default barn om det finns två vuxna (normativt, jag vet)
+     */
+    function clonePerson(houseHold) {
+        var $skeleton = $('#skeleton').clone();
+        $skeleton.removeAttr('id');
+
+        if (houseHold.getGrownups().length == 0) {
+            $skeleton.addClass('first-person');
+            $skeleton.find('.age').attr('min', 18);
+        }
+        if (houseHold.getGrownups().length > 1) {
+            $skeleton.find(".age").val("12");
+        }
+        $skeleton.appendTo('#persons').find('.age').change();
+    }
+
+    /*
+     Where the magic happens
+     */
     marginalCalc.run(function (houseHold, tax, socialBidrag, barnBidrag, bostadsBidrag) {
+
         this.ready = function () {
+            /* Jquery byter ut "this" i funktionerna, därför skapar vi en that! Ha! */
             var that = this;
 
+            /* Skapar en ny person och sedan bygger om hushållet */
             $("#addPerson").click(function () {
-
-                var $skeleton = $('#skeleton').clone();
-                $skeleton.removeAttr('id');
-
-                if (houseHold.getGrownups().length == 0) {
-                    $skeleton.addClass('first-person');
-                    $skeleton.find('.age').attr('min', 18);
-                }
-                if (houseHold.getGrownups().length > 1) {
-                    $skeleton.find(".age").val("12");
-                }
-                $skeleton.appendTo('#persons').find('.age').change();
+                clonePerson(houseHold);
                 that.buildHouseHold();
             });
 
-            $(document).on('change', '.age', function () {
 
-                if ($(this).val() < 18) {
-                    $(this).parents(".person").find(".income").val(0).hide();
-                    $(this).parents(".person").find(".person-icon").addClass("kid-icon");
-                } else {
-                    $(this).parents(".person").find(".income").val(0).show().trigger("change");
-                    $(this).parents(".person").find(".person-icon").removeClass("kid-icon");
-                }
-
-                $(this).parents(".person").find(".age-display .value").html($(this).val())
-            });
-            $(document).on('change', '.income', function () {
-                $(this).parents(".person").find(".income-display .value").html($(this).val())
-            });
+            /* Alla ändringar på .watchChange input får scriptet att bygga om hushållet, tex inkomst etc. */
             $(document).on('change', '.watchChange input', function () {
                 that.buildHouseHold();
             });
+            /*
+             Ta bort en person, bygg om hushållet
+             */
             $(document).on('click', '.remove-person', function () {
                 $(this).parents('.person').hide('slow', function () {
                     $(this).remove();
@@ -266,17 +299,23 @@
                 });
 
             });
-            $("#simulate").click(function(){
+            /* Lägger in simuleringarna som är ganska intensiva i en separat funktion */
+            $("#simulate").click(function () {
                 that.runSimulations();
             });
         };
+        /* Skannar av vilka personer som är skapade i html och bygger hushållet */
         this.buildHouseHold = function () {
 
             /*
-             * Build Household
+             * Återställ och ta bort alla personer.
+             *
              */
             houseHold.persons = [];
 
+            /*
+             * Lägg till personer i hushållet
+             * */
             $("#persons .person").each(function (i, $personContext) {
 
                 var salary = jQuery(".income", $personContext).val();
@@ -288,15 +327,20 @@
             });
 
             /*
-             * Build House
+             * Vad har vi för hyra?
              */
             var rent = $("#rent").val();
-
+            /*
+             * Kvadratmeter
+             * */
             var sqmtrs = $("#sqmtrs").val();
 
-
+            /*
+             * Skapa huset och lägg in det i hushållet
+             */
             var house = new Housing(sqmtrs, rent);
             houseHold.addHouse(house);
+
             /*
              Om vi inte har en hyra kan vi räkna ut en genomsnittlig hyra
              */
@@ -306,7 +350,7 @@
 
             }
 
-            console.log(houseHold.totalCalc());
+            /* Hämta värden och mata in i html */
             $("#barnbidrag").val(barnBidrag.totalCalc());
             $("#bostadsbidrag").val(bostadsBidrag.getBostadsBidrag());
             $("#socialbidrag").val(socialBidrag.totalCalc());
@@ -318,17 +362,18 @@
             $(".graf").empty();
 
         };
-
+        /**
+         * Kör Marginaleffekts Simuleringar och skapar grafer
+         */
         this.runSimulations = function () {
             var marginalGraphData = new Array(),
                     graphSalaryData = new Array(),
                     graphBostadsbidrag = new Array(),
                     graphBarnBidragData = new Array(),
                     graphSocialbidrag = new Array(),
+                    graphMarginalLangtid = new Array(),
                     marginalTaxGraph = new Array();
             var labelData = new Array();
-            var total = marginalCalc.totalCalc();
-
 
             var person = houseHold.getGrownups()[0];
             if (!person) {
@@ -336,24 +381,51 @@
             }
             person.salary = 0;
             person.income = 0;
+
+            /* Totala inkomster, med jobbstumulans */
+            person.langtidsSoc = true;
+            var oldTotalLangtid = marginalCalc.totalCalc();
+
+            /* Totala inkomster, utan jobbstumulans */
+            person.langtidsSoc = false;
             var oldtotal = marginalCalc.totalCalc();
-            var salaryIncrement = 100;
+
+            /* Skatteförändringar endast  */
             var oldTax = houseHold.totalCalc() + tax.totalCalc();
+
+            var salaryIncrement = 200;
+
             for (var a = 0; a < (60000 / salaryIncrement); a++) {
                 person.salary = person.salary + salaryIncrement;
                 person.income = person.income + salaryIncrement;
                 labelData[a] = person.salary;
+                /**
+                 * Marginaleffekt för totala inkomster, utan jobbstimulans
+                 */
+                person.langtidsSoc = false;
                 var newtotal = marginalCalc.totalCalc();
                 var marginal = (1 - ((newtotal - oldtotal) / salaryIncrement)) * 100;
-
                 oldtotal = newtotal;
-                var newTax = houseHold.totalCalc() + tax.totalCalc();
-
-                var marginalTax = (1 -(newTax - oldTax) / salaryIncrement) * 100;
-                oldTax = newTax;
-
                 marginalGraphData[a] = {x: person.salary, y: marginal};
+
+                /**
+                 * Marginaleffekt för totala inkomster, med jobbstumulans
+                 */
+                person.langtidsSoc = true;
+                var newTotalLangtid = marginalCalc.totalCalc();
+                var marginalLangtid = (1 - ((newTotalLangtid - oldTotalLangtid) / salaryIncrement)) * 100;
+                oldTotalLangtid = newTotalLangtid;
+                graphMarginalLangtid[a] = {x: person.salary, y: marginalLangtid};
+
+                /**
+                 * Marginaleffekt för skatten
+                 */
+                var newTax = houseHold.totalCalc() + tax.totalCalc();
+                var marginalTax = (1 - (newTax - oldTax) / salaryIncrement) * 100;
+                oldTax = newTax;
                 marginalTaxGraph[a] = {x: person.salary, y: marginalTax};
+
+
                 graphSalaryData[a] = {x: person.salary, y: houseHold.totalCalc() + tax.totalCalc()};
 
                 if (barnBidrag.totalCalc())
@@ -366,7 +438,6 @@
             }
 
 
-
             $("#marginalgraf").CanvasJSChart({
                 title: {
                     text: "Marginaleffekt på löneökning"
@@ -374,10 +445,18 @@
                 data: [
 
                     {
-                        name: "Marginaleffekt",
+                        name: "Korttidsarbetslös",
+                        showInLegend: "true",
                         type: "line",
                         dataPoints: marginalGraphData
+                    },
+                    {
+                        name: "Långtidsarbetslös",
+                        showInLegend: "true",
+                        type: "line",
+                        dataPoints: graphMarginalLangtid
                     }
+
                 ]
             });
             $("#marginalTaxgraf").CanvasJSChart({
@@ -393,8 +472,46 @@
                     }
                 ]
             });
-
             $("#incomegraf").CanvasJSChart({
+                title: {
+                    text: "Fördelning av inkomster"
+
+                },
+                data: [
+
+                    {
+                        type: "stackedArea",
+                        legendText: "Lön efter skatt",
+                        showInLegend: "true",
+                        toolTipContent: "Lön {x} kr: {y} kr efter skatt",
+                        dataPoints: graphSalaryData
+                    },
+                    {
+                        type: "stackedArea",
+                        legendText: "Barnbidrag",
+                        showInLegend: "true",
+                        toolTipContent: "Lön {x} kr: Barnbidrag {y} kr",
+                        dataPoints: graphBarnBidragData
+                    },
+                    {
+                        type: "stackedArea",
+                        legendText: "Bostadsbidrag",
+                        toolTipContent: "Lön {x} kr: Bostadsbidrag {y} kr",
+                        showInLegend: "true",
+                        dataPoints: graphBostadsbidrag
+                    },
+                    {
+                        type: "stackedArea",
+                        legendText: "Socialbidrag",
+                        toolTipContent: "Lön {x} kr: Socialbidrag {y} kr",
+                        showInLegend: "true",
+                        dataPoints: graphSocialbidrag
+                    }
+                ]
+            });
+
+
+            $("#incomegrafRelative").CanvasJSChart({
                 title: {
                     text: "Fördelning av inkomster"
 
@@ -432,12 +549,8 @@
                 ]
             });
 
-            //$("#progress").delay(10000).addClass("hide");
-            $("#totalt").val(total);
-
 
         }
-
     });
 
 

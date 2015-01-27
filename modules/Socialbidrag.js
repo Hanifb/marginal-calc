@@ -96,27 +96,23 @@ marginalCalc.addModule("socialBidrag", function (houseHold, tax, barnBidrag, stu
                 sum += 2950;
             }
         }
-        console.log("Riksnorm",sum);
         return sum;
 
 
     };
-
     this.totalCalc = function () {
-        if (
-            (
-            houseHold.totalCalc()
-            + tax.totalCalc()
-            + bostadsBidrag.totalCalc()
-            + barnBidrag.totalCalc())
-            + studieBidrag.totalCalc() <
-            this.getRiksnorm()
-            + houseHold.getHouse().getRent()
-        ) {
-            return Math.round((this.getRiksnorm() + houseHold.getHouse().getRent()) - (houseHold.totalCalc() + tax.totalCalc() + bostadsBidrag.totalCalc() + studieBidrag.totalCalc() + barnBidrag.totalCalc()));
-        } else {
-            return 0;
+        var income = (houseHold.totalCalc() + tax.totalCalc());
+
+        /* Jobbstimulans */
+        if (houseHold.getPersons()[0].langtidsSoc) {
+                income = income * 0.75;
         }
+
+        var totalIncome = income + bostadsBidrag.totalCalc() + studieBidrag.totalCalc() + barnBidrag.totalCalc();
+
+        var socialBidrag = (this.getRiksnorm() + houseHold.getHouse().getRent()) - (totalIncome);
+        return Math.max(0, Math.round(socialBidrag));
+
     }
 }, 200);
 marginalCalc.scriptLoader.loadComplete("socialbidrag");
