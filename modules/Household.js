@@ -218,7 +218,6 @@ function Person(salary, age) {
         if(typeof this.data[dataKey] === "undefined"){
             return undefined;
         }
-        console.log(dataKey, this.data[dataKey]);
         return this.data[dataKey];
     };
     this.getTaxableIncome = function () {
