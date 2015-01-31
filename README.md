@@ -1,8 +1,5 @@
 # marginal-calc
-Marginaleffektskalkylator i HTML5 och Javscript
-===============================================
-
-Obs: Varken dokumentation eller kod är fulländad. Ett referensbibliotek är fortfarande under uppbyggnad för moduler och funktioner.
+## Marginaleffektskalkylator i HTML5 och Javscript
 
 Kom igång:
 ----------
