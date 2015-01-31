@@ -1,47 +1,112 @@
-console.log("tax");
-marginalCalc.addModule("tax", function(houseHold){
-    const PBB = 44400; // 2014 Prisbasbelopp
-    const IBB = 56900; // 2014 Inkomstbasbelopp
-    const SKIKT1 = 420800; // 2014 Statlig inkomstskatt, brytpunkt
-    const SKIKT2 = 602600; //2014 Värnskatt, brytpunkt
-    const KI = 0.32; //Kommunalskatt
+/**
+ * @file    Innehåller modulen {@link tax}
+ * @version 1.0
+ * @author Hanif Bali
+ */
+(function(){
+/**
+ * Skatt modul. Som räknar ut grundavdrag, pensionsavgift, jobbskatteavdrag och kommunalskatt.
+ *
+ * @alias tax
+ * @implements {Module}
+ * @param {houseHold} houseHold Hushållet som skatten ska beräknas på
+ * @constructor
+ */
+function tax(houseHold) {
+    /**
+     * Prisbasbeloppet för 2014
+     * @default
+     * @type {Number}
+     */
+    var PBB = 44400; // 2014 Prisbasbelopp
+    /**
+     * Inkomstbasbeloppet för 2014
+     * @default
+     * @type {Number}
+     */
+    var IBB = 56900; // 2014 Inkomstbasbelopp
+    /**
+     * Statlig inkomstskatt, brytpunkt  2014
+     * @default
+     * @type {Number}
+     */
+    var SKIKT1 = 420800; // 2014 Statlig inkomstskatt, brytpunkt
+    /**
+     * Värnskatt, brytpunkt  2014
+     * @default
+     * @type {Number}
+     */
+    var SKIKT2 = 602600; //2014 Värnskatt, brytpunkt
+    /**
+     * Kommunalskatt
+     * @default
+     * @type {Number}
+     */
+    var KI = 0.32; //Kommunalskatt
 
-    this.totalCalc = function(){
+    /**
+     * Räknar ihop total skatteskuld
+     * @example
+     *  tax.totalCalc();
+     *  //-> -4500
+     * @returns {Number}
+     */
+    this.totalCalc = function () {
         var grownUps = houseHold.getPersons();
         var totalTax = 0;
-        for(var i = 0; i < grownUps.length; i++){
-           totalTax -= this.totalTax(grownUps[i]) / 12;
+        for (var i = 0; i < grownUps.length; i++) {
+            totalTax -= this.totalTax(grownUps[i]) / 12;
         }
         return Math.round(totalTax);
     };
-
-    this.totalJSK = function(){
+    /**
+     * Totalt jobbskatteavdrag för hela hushållet.
+     *
+     * @returns {Number}
+     */
+    this.totalJSK = function () {
         var grownUps = houseHold.getPersons();
         var jsk = 0;
-        for(var i = 0; i < grownUps.length; i++){
+        for (var i = 0; i < grownUps.length; i++) {
             jsk += this.jobbskatteavdrag(grownUps[i]);
         }
         return jsk;
     };
+    /**
+     * Räknar ihop total skatt för en person
+     *
+     * @param {Person} person Personen att beräkna skatten för
+     * @returns {Number}
+     */
     this.totalTax = function (person) {
         var JA = Math.round(this.jobbskatteavdrag(person));
         var GA = this.grundAvdrag(person);
         var TI = Math.round(person.getTaxableIncome());
-        /*   console.log("Grundavdrag", GA);
-         console.log("Income", TI);
-         console.log("JSK", JA);
-         */
         var totalt = -JA + (TI - GA) * KI + Math.max(0, (TI - GA - SKIKT1) * 0.20) + (Math.max(0, (TI - GA - SKIKT2) * 0.05))
-        return Math.round(Math.max(0,totalt));
+        return Math.round(Math.max(0, totalt));
     };
-    this.rundaUppHundra = function(number){
-        return Math.ceil(number/100)*100;
+    /**
+     * Runda upp en siffra till närmsta hundratal
+     * @param {Number} number siffran som ska avrundas
+     * @returns {Number}
+     */
+    this.rundaUppHundra = function (number) {
+        return Math.ceil(number / 100) * 100;
     };
-    this.rundaNerHundra = function(number){
-        return Math.floor(number/100)*100;
+    /**
+     * Runda ner en siffra till närmsta hundratal
+     * @param {Number} number siffran som ska avrundas
+     * @returns {Number}
+     */
+    this.rundaNerHundra = function (number) {
+        return Math.floor(number / 100) * 100;
     };
 
-
+    /**
+     * Räknar ut Jobbskatteavdraget för en person.
+     * @param {Person} person Personen att beräkna jobbskatteavdraget på.
+     * @returns {Number}
+     */
     this.jobbskatteavdrag = function (person) {
         var GA = this.grundAvdrag(person);
         var TI = this.rundaNerHundra(person.getTaxableIncome());
@@ -60,6 +125,12 @@ marginalCalc.addModule("tax", function(houseHold){
         return (jsk);
 
     };
+    /**
+     * Jobbskatteavdrag för någon över 65 år
+     *
+     * @param {Person} person Personen att beräkna jobbskatteavdraget på.
+     * @returns {Number}
+     */
     this.jskOver65 = function (person) {
         var AI = this.rundaNerHundra(person.getWorkIncome());
         if (AI < 100000) {
@@ -71,6 +142,12 @@ marginalCalc.addModule("tax", function(houseHold){
         }
 
     };
+    /**
+     * Jobbskatteavdrag för någon under 65 år
+     *
+     * @param {Person} person Personen att beräkna jobbskatteavdraget på.
+     * @returns {Number}
+     */
     this.jskUnder65 = function (person) {
         /*
          Inkomstskattelag 1999:1229 67 kap. 5 § 2014
@@ -97,6 +174,12 @@ marginalCalc.addModule("tax", function(houseHold){
 
 
     };
+    /**
+     * Beräknar pensionsavgift för en person.
+     *
+     * @param {Person} person Personen att beräkna på.
+     * @returns {Number}
+     */
     this.pensionsavgift = function (person) {
         var avgift = 0;
         if (person.getTaxableIncome() > 0.423 * IBB && person.getTaxableIncome() < 8.07 * IBB) {
@@ -107,7 +190,12 @@ marginalCalc.addModule("tax", function(houseHold){
         return this.rundaUppHundra(avgift)
 
     };
-
+    /**
+     * Räknar ut grundavdraget för en person
+     *
+     * @param {Person} person Personen att beräkna på.
+     * @returns {Number}
+     */
     this.grundAvdrag = function (person) {
         var grundavdrag = 0;
         var TI = this.rundaNerHundra(person.getTaxableIncome());
@@ -116,12 +204,17 @@ marginalCalc.addModule("tax", function(houseHold){
         } else {
             grundavdrag = this.grundAvdragOver65(TI);
         }
-        if(grundavdrag > TI){
+        if (grundavdrag > TI) {
             grundavdrag = TI;
         }
         return this.rundaUppHundra(grundavdrag)
     };
-
+    /**
+     * Beräknar grundavdraget för en årslön på en person under 65.
+     *
+     * @param {Number} income Taxerbar årsinkomst
+     * @returns {Number}
+     */
     this.grundAvdragUnder65 = function (income) {
         /*
          *  Inkomstskattelag 1999:1229 63 kap. 2 § 2014
@@ -151,7 +244,12 @@ marginalCalc.addModule("tax", function(houseHold){
             return 0.293 * PBB;
         }
     };
-
+    /**
+     * Beräknar grundavdraget för en årslön för en person under 65.
+     *
+     * @param {Number} income Taxerbar årsinkomst
+     * @returns {Number}
+     */
     this.grundAvdragOver65 = function (income) {
         if (income <= 0.99 * PBB) {
             return 0.682 * PBB
@@ -182,6 +280,8 @@ marginalCalc.addModule("tax", function(houseHold){
         }
 
     }
-},200);
+}
+marginalCalc.addModule("tax", tax, 200);
 
 marginalCalc.scriptLoader.loadComplete("tax");
+})();

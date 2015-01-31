@@ -1,4 +1,28 @@
-marginalCalc.addModule("socialBidrag", function (houseHold, tax, barnBidrag, studieBidrag, bostadsBidrag) {
+/**
+ * @file    Innehåller modulen {@link socialBidrag}
+ * @version 1.0
+ * @author Hanif Bali
+ */
+
+(function(){
+/**
+ * Socialbidrags (försörjningstöd) kalkylator
+ *
+ * @constructor
+ * @implements {Module}
+ * @alias socialBidrag
+ * @param {houseHold} houseHold
+ * @param {tax} tax
+ * @param {barnBidrag} barnBidrag
+ * @param {studieBidrag} studieBidrag
+ * @param {bostadsBidrag} bostadsBidrag
+ */
+function socialBidrag(houseHold, tax, barnBidrag, studieBidrag, bostadsBidrag) {
+    /**
+     * Räknar ut hushållets utgiftsnorm enligt Socialstyrelsen
+     *
+     * @returns {Number} utgiftsnorm
+     */
     this.commonOutcome = function () {
         switch (houseHold.numberOfPersons()) {
             case 0:
@@ -34,7 +58,11 @@ marginalCalc.addModule("socialBidrag", function (houseHold, tax, barnBidrag, stu
                 break;
         }
     };
-
+    /**
+     * Hämtar riksnormen för hushållet
+     *
+     * @returns {Number}
+     */
     this.getRiksnorm = function () {
 
         if (!houseHold.numberOfPersons()) {
@@ -100,19 +128,28 @@ marginalCalc.addModule("socialBidrag", function (houseHold, tax, barnBidrag, stu
 
 
     };
+    /**
+     * Räknar ut hur mycket försörjningstöd hela hushållet har rätt till.
+     * @returns {Number}
+     */
     this.totalCalc = function () {
         var income = (houseHold.totalCalc() + tax.totalCalc());
 
-        /* Jobbstimulans */
-        if (houseHold.getPersons()[0].langtidsSoc) {
-                income = income * 0.75;
-        }
+        // Jobbstimulans
 
+        if (houseHold.getPersons()[0].getData("langtidssoc")) {
+            income = income * 0.75;
+
+        }
         var totalIncome = income + bostadsBidrag.totalCalc() + studieBidrag.totalCalc() + barnBidrag.totalCalc();
 
         var socialBidrag = (this.getRiksnorm() + houseHold.getHouse().getRent()) - (totalIncome);
-        return Math.max(0, Math.round(socialBidrag));
+        socialBidrag = Math.max(0, socialBidrag);
+
+        return Math.round(socialBidrag);
 
     }
-}, 200);
+}
+marginalCalc.addModule("socialBidrag", socialBidrag, 200);
 marginalCalc.scriptLoader.loadComplete("socialbidrag");
+})();

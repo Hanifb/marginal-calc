@@ -58,5 +58,5 @@ Hela funktionen ser nu ut som:
         alert(bostadsBidrag.totalCalc());
     });
 
-# Vad mer kan du göra?
-För fler exempel på vad man kan göra i väntan på en full dokumentation av alla funktioner så kan du spana in demot som inkluderas med paketet.
+## Vad mer kan du göra?
+Läs dokumentationen och spana in källkoden för demot för att se vad mer du kan göra.
