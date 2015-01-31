@@ -383,12 +383,12 @@
             person.income = 0;
 
             /* Totala inkomster, med jobbstumulans */
-            person.langtidsSoc = true;
+            person.setData("langtidsSoc", true);
             var oldTotalLangtid = marginalCalc.totalCalc();
 
             /* Totala inkomster, utan jobbstumulans */
-            person.langtidsSoc = false;
-            var oldtotal = marginalCalc.totalCalc();
+            person.setData("langtidsSoc", false);
+            var oldTotal = marginalCalc.totalCalc();
 
             /* Skatteförändringar endast  */
             var oldTax = houseHold.totalCalc() + tax.totalCalc();
@@ -397,46 +397,49 @@
 
             for (var a = 0; a < (60000 / salaryIncrement); a++) {
                 person.salary = person.salary + salaryIncrement;
-                person.income = person.income + salaryIncrement;
                 labelData[a] = person.salary;
+                person.setData("langtidsSoc", true);
+                var totalCalcLangTid = marginalCalc.totalCalc(true);
+                person.setData("langtidsSoc", false);
+                var totalCalc = marginalCalc.totalCalc(true);
 
-                /**
+                /*
                  * Marginaleffekt för totala inkomster, utan jobbstimulans
                  */
                 person.langtidsSoc = false;
-                var newtotal = marginalCalc.totalCalc();
-                var marginal = (1 - ((newtotal - oldtotal) / salaryIncrement)) * 100;
-                oldtotal = newtotal;
-                marginalGraphData[a] = {x: person.salary, y: marginal};
-
-                /**
+                marginalGraphData[a] = {
+                    x: person.salary,
+                    y: marginalCalc.marginalEff(salaryIncrement, totalCalc["totalCalc"], oldTotal)
+                };
+                oldTotal = totalCalc["totalCalc"];
+                /*
                  * Marginaleffekt för totala inkomster, med jobbstumulans
                  */
                 person.langtidsSoc = true;
-                var newTotalLangtid = marginalCalc.totalCalc();
-                var marginalLangtid = (1 - ((newTotalLangtid - oldTotalLangtid) / salaryIncrement)) * 100;
-                oldTotalLangtid = newTotalLangtid;
-                graphMarginalLangtid[a] = {x: person.salary, y: marginalLangtid};
+               /* graphMarginalLangtid[a] = {
+                    x: person.salary,
+                    y: marginalCalc.marginalCalc(salaryIncrement, totalCalcLangTid["totalCalc"], oldTotalLangtid)
+                };*/
+                oldTotalLangtid = totalCalcLangTid["totalCalc"];
 
-                var totalCalc = marginalCalc.totalCalc(true);
-                /**
+                /*
                  * Marginaleffekt för skatten
                  */
-                var newTax = totalCalc["houseHold"] + totalCalc["tax"];
-                var marginalTax = (1 - (newTax - oldTax) / salaryIncrement) * 100;
-                oldTax = newTax;
-                marginalTaxGraph[a] = {x: person.salary, y: marginalTax};
+                marginalTaxGraph[a] = {
+                    x: person.salary,
+                    y: marginalCalc.marginalEff(salaryIncrement, totalCalc["houseHold"] + totalCalc["tax"], oldTax)
+                };
+                oldTax = totalCalc["houseHold"] + totalCalc["tax"];
 
-
-
+                totalCalc = totalCalcLangTid;
                 graphSalaryData[a] = {x: person.salary, y: totalCalc["houseHold"] + totalCalc["tax"]};
 
-                if (barnBidrag.totalCalc())
-                    graphBarnBidragData[a] = {x: person.salary, y:  totalCalc["barnBidrag"]};
-                if (bostadsBidrag.totalCalc())
-                    graphBostadsbidrag[a] = {x: person.salary, y:  totalCalc["bostadsBidrag"]};
-                if (socialBidrag)
-                    graphSocialbidrag[a] = {x: person.salary, y:  totalCalc["socialBidrag"]};
+                if (totalCalc["barnBidrag"])
+                    graphBarnBidragData[a] = {x: person.salary, y: totalCalc["barnBidrag"]};
+                if (totalCalc["bostadsBidrag"])
+                    graphBostadsbidrag[a] = {x: person.salary, y: totalCalc["bostadsBidrag"]};
+                if (totalCalc["socialBidrag"])
+                    graphSocialbidrag[a] = {x: person.salary, y: totalCalc["socialBidrag"]};
 
             }
 
