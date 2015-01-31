@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/bostadsbidrag.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/bostadsbidrag.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Innehåller modulen {@link bostadsBidrag}
+ * @file
+ * @author Hanif Bali
+ * @version 1.0
+ */
+(function () {
+    /**
+     * Bostadsbidragmodul
+     *
+     * @alias bostadsBidrag
+     * @param {houseHold} houseHold
+     * @class
+     */
+    var bostadsBidrag = function (houseHold) {
+
+        /**
+         * Returnerar hela bostadsbidraget
+         *
+         * @returns {Number}
+         */
+        this.totalCalc = function () {
+            return this.getBostadsBidrag();
+        };
+
+        /**
+         * Räknar ut bostadsbidraget enligt Socialförsäkringslagen 94 kap
+         *
+         * @returns {Number}
+         */
+        this.getBostadsBidrag = function () {
+            var rentBenefit = 0;
+            var house = houseHold.getHouse();
+            if (houseHold.getKids().length) {
+
+
+                var fast = 0;
+                var toplimit = 0;
+                var sqmtrsLimit = 0;
+                var floor = 0;
+                var bottomlimit;
+                switch (houseHold.getKids().length) {
+                    case 1:
+                        fast = 1500;
+                        bottomlimit = 1400;
+                        toplimit = 5300;
+                        sqmtrsLimit = 80;
+                        floor = 3000;
+                        break;
+                    case 2:
+                        fast = 2000;
+                        bottomlimit = 1400;
+                        toplimit = 5900;
+                        sqmtrsLimit = 100;
+                        floor = 3300;
+                        break;
+                    case 3:
+                        fast = 2650;
+                        bottomlimit = 1400;
+                        toplimit = 6600;
+                        sqmtrsLimit = 120;
+                        floor = 3600;
+                        break;
+                    case 4:
+                        fast = 2650;
+                        bottomlimit = 1400;
+                        toplimit = 6600;
+                        sqmtrsLimit = 140;
+                        floor = 3900;
+                        break;
+                    default:
+                    case 5:
+                        fast = 2650;
+                        bottomlimit = 1400;
+                        toplimit = 6600;
+                        sqmtrsLimit = 160;
+                        floor = 4200;
+                        break
+
+                }
+
+
+                var rentCost = house.rent;
+
+                if (house.sqmtrs > sqmtrsLimit) {
+                    rentCost = rentCost - ((house.getRent() / house.sqmtrs) * (house.sqmtrs - sqmtrsLimit));
+
+                    if (rentCost &lt; floor) {
+                        rentCost = floor;
+                    }
+                }
+
+
+                // TODO Fixa familjehemsplacering
+                // if familjehemsplacering
+                // if (rentCost > 2000) {
+                // if (rentCost > toplimit) {
+                // rentCost = toplimit;
+                // }
+
+
+                rentBenefit = (rentCost - bottomlimit) * 0.5;
+
+                var housingBenefit = fast + rentBenefit;
+
+                if (houseHold.getGrownups().length == 1) {
+                    if (houseHold.getHouseHoldTaxableIncome() > 117000) {
+                        housingBenefit = housingBenefit - (((houseHold.getHouseHoldTaxableIncome() - 117000) / 12) * 0.2);
+                    }
+                } else {
+                    houseHold.getGrownups().forEach(function (person) {
+                        if (person.getTaxableIncome() > 58500) {
+                            housingBenefit = housingBenefit - (((person.getTaxableIncome() - 58500) / 12) * 0.2);
+                        }
+                    })
+                }
+
+
+            }
+            else {
+
+                var under29 = false;
+                // Barnlösa över 29 kan ej få bostadsbidrag
+                houseHold.getGrownups().forEach(function (person) {
+                    if (person.age &lt; 29) {
+                        under29 = true;
+                    }
+                });
+
+                if (!under29) {
+                    return 0;
+                }
+                rentCost = house.getRent();
+                if (house.sqmtrs > 60) {
+                    rentCost = rentCost - ((house.getRent() / house.sqmtrs) * (house.sqmtrs - 60));
+                }
+
+                if (rentCost > 1800) {
+                    rentBenefit = (rentCost - 1800) * 0.75;
+                    if (rentCost > 2600) {
+                        rentBenefit = (2600 - 1800) * 0.75;
+
+                        if (rentCost > 3600) {
+                            rentCost = 3600;
+                        }
+
+                        rentBenefit += (rentCost - 2600) * 0.5
+                    }
+
+                }
+                if (houseHold.getGrownups().length &lt; 2) {
+                    if (houseHold.getHouseHoldTaxableIncome() > 41000) {
+                        rentBenefit = rentBenefit - ((houseHold.getHouseHoldTaxableIncome() - 41000) * 0.33);
+                    }
+                } else {
+                    if (houseHold.getHouseHoldTaxableIncome() > 58000) {
+                        rentBenefit = rentBenefit - ((houseHold.getHouseHoldTaxableIncome() - 58000) * 0.33);
+                    }
+                }
+                housingBenefit = rentBenefit;
+            }
+            if (housingBenefit &lt; 100)
+                return 0;
+
+            return Math.round(housingBenefit);
+
+        };
+    };
+
+    marginalCalc.addModule("bostadsBidrag", bostadsBidrag, 100);
+    marginalCalc.scriptLoader.loadComplete("bostadsbidrag");
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="barnBidrag.html">barnBidrag</a></li><li><a href="bostadsBidrag.html">bostadsBidrag</a></li><li><a href="houseHold.html">houseHold</a></li><li><a href="Housing.html">Housing</a></li><li><a href="Person.html">Person</a></li><li><a href="socialBidrag.html">socialBidrag</a></li><li><a href="studieBidrag.html">studieBidrag</a></li><li><a href="tax.html">tax</a></li></ul><h3>Namespaces</h3><ul><li><a href="marginalCalc.html">marginalCalc</a></li></ul><h3>Interfaces</h3><ul><li><a href="Module.html">Module</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta1</a> on Sat Jan 31 2015 01:48:36 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

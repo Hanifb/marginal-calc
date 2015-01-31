@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>marginal-calc</h1><h1>Marginaleffektskalkylator i HTML5 och Javscript</h1><p>Obs: Varken dokumentation eller kod är fulländad. Ett referensbibliotek är fortfarande under uppbyggnad för moduler och funktioner.</p>
+<h2>Kom igång:</h2><p>marginalCalc använder olika moduler som kan i samklang med varandra räkna ut olika bidrag eller skatter.
+Medföljande moduler är just nu:</p>
+<ul>
+<li>Barnbidrag</li>
+<li>Socialbidrag</li>
+<li>Studiebidrag</li>
+<li>Bostadsbidrag</li>
+<li>Skattesystem (Grundavdrag, Pensionsavgift, Jobbskatteavdrag, Kommunalskatt)</li>
+</ul>
+<h2>Installation:</h2><p>Du behöver endast inkludera <strong>marginalCalc.js</strong> samt ha en mapp som heter <em>modules</em> där alla moduler ligger.</p>
+<h2>Exempel:</h2><p>För vårt exempel så ska vi börja med att räkna ett bostadsbidrag. Först ska vi ladda in alla moduler vi behöver. Bostadsbidraget är beroende av modulen Household för att kunna fungera, därför laddar vi in den.</p>
+<pre class="prettyprint source"><code>marginalCalc.scriptLoader.addScript([&quot;houseHold&quot;, &quot;bostadsBidrag&quot;])</code></pre><p>Därefter ska vi skapa hushållet, marginalCalc håller reda på alla moduler som är beroende av varandra åt dig, men du måste definiera vilka moduler du vill direkt tillgång till som argument i funktionen marginalCalc.run:</p>
+<pre class="prettyprint source"><code>marginalCalc.run(function(houseHold, bostadsBidrag){
+
+});</code></pre><p>Nu vill vi addera hushållet, då ska vi först skapa några personer, det gör vi med funktionen <strong>Person(salary, age)</strong>. Låt oss göra personen Hanif till 24 år gammal och en inkomst på 2000kr i månaden.</p>
+<pre class="prettyprint source"><code>    var Hanif = new Person(24, 2000);
+    houseHold.addPerson(Hanif);</code></pre><p>Därefter ska vi skapa själva lägenheten, det gör vi med funktionen <strong>Housing(sqmtrs, rent, rental)</strong>, låt oss ge Hanif en lägenhet på 30 kvadrat, som är en hyresrätt (i wish), och har en hyra på 4000 kr (låt oss drömma).</p>
+<pre class="prettyprint source"><code>var Lgh = new Houseing(30, 4000, true);
+household.addHouse(Lgh);</code></pre><p>Om vi vill få ut Hanifs bostadsbidrag så behöver vi endast:</p>
+<pre class="prettyprint source"><code> alert(bostadsBidrag.totalCalc());</code></pre><p>Hela funktionen ser nu ut som:</p>
+<pre class="prettyprint source"><code>marginalCalc.run(function(houseHold, bostadsBidrag){
+    var Hanif = new Person(24, 2000);
+    houseHold.addPerson(Hanif);
+
+    var Lgh = new Housing(30, 4000, true);
+    household.addHouse(Lgh);
+
+    alert(bostadsBidrag.totalCalc());
+});</code></pre><h2>Vad mer kan du göra?</h2><p>Läs dokumentationen och spana in källkoden för demot för att se vad mer du kan göra.</p></article>
+    </section>
+
+
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        marginalCalc.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Innehåller defintionen för <a href="marginalCalc.html">marginalCalc</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.3.5</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="marginalCalc.js.html">marginalCalc.js</a>, <a href="marginalCalc.js.html#line2">line 2</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        modules/barnbidrag.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Innehåller modulerna <a href="barnBidrag.html">barnBidrag</a> och <a href="studieBidrag.html">studieBidrag</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_barnbidrag.js.html">modules/barnbidrag.js</a>, <a href="modules_barnbidrag.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        modules/bostadsbidrag.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Innehåller modulen <a href="bostadsBidrag.html">bostadsBidrag</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_bostadsbidrag.js.html">modules/bostadsbidrag.js</a>, <a href="modules_bostadsbidrag.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        modules/household.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Denna fil innehåller defintioner för modulen <a href="houseHold.html">houseHold</a> samt klasserna <a href="Housing.html">Housing</a> och <a href="Person.html">Person</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_household.js.html">modules/household.js</a>, <a href="modules_household.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        modules/socialbidrag.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Innehåller modulen <a href="socialBidrag.html">socialBidrag</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_socialbidrag.js.html">modules/socialbidrag.js</a>, <a href="modules_socialbidrag.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        modules/tax.js
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Innehåller modulen <a href="tax.html">tax</a></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Hanif Bali</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="modules_tax.js.html">modules/tax.js</a>, <a href="modules_tax.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="barnBidrag.html">barnBidrag</a></li><li><a href="bostadsBidrag.html">bostadsBidrag</a></li><li><a href="houseHold.html">houseHold</a></li><li><a href="Housing.html">Housing</a></li><li><a href="Person.html">Person</a></li><li><a href="socialBidrag.html">socialBidrag</a></li><li><a href="studieBidrag.html">studieBidrag</a></li><li><a href="tax.html">tax</a></li></ul><h3>Namespaces</h3><ul><li><a href="marginalCalc.html">marginalCalc</a></li></ul><h3>Interfaces</h3><ul><li><a href="Module.html">Module</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta1</a> on Sat Jan 31 2015 01:48:36 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

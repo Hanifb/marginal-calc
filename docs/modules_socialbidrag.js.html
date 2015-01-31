@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/socialbidrag.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/socialbidrag.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file    Innehåller modulen {@link socialBidrag}
+ * @version 1.0
+ * @author Hanif Bali
+ */
+
+(function(){
+/**
+ * Socialbidrags (försörjningstöd) kalkylator
+ *
+ * @constructor
+ * @implements {Module}
+ * @alias socialBidrag
+ * @param {houseHold} houseHold
+ * @param {tax} tax
+ * @param {barnBidrag} barnBidrag
+ * @param {studieBidrag} studieBidrag
+ * @param {bostadsBidrag} bostadsBidrag
+ */
+function socialBidrag(houseHold, tax, barnBidrag, studieBidrag, bostadsBidrag) {
+    /**
+     * Räknar ut hushållets utgiftsnorm enligt Socialstyrelsen
+     *
+     * @returns {Number} utgiftsnorm
+     */
+    this.commonOutcome = function () {
+        switch (houseHold.numberOfPersons()) {
+            case 0:
+                return 0;
+            case 1:
+                return 930;
+                break;
+            case 2:
+                return 1040;
+                break;
+            case 3:
+                return 1310;
+                break;
+            case 4:
+                return 1490;
+                break;
+            case 5:
+                return 1710;
+                break;
+            case 6:
+                return 1950;
+                break;
+            case 7:
+                return 2120;
+                break;
+            default :
+                var houseHoldExtra = 2120;
+                var rest = houseHold.numberOfPersons() - 7;
+                for (var a = 0; a &lt; rest; a++) {
+                    houseHoldExtra = houseHoldExtra + 170;
+                }
+                return houseHoldExtra;
+                break;
+        }
+    };
+    /**
+     * Hämtar riksnormen för hushållet
+     *
+     * @returns {Number}
+     */
+    this.getRiksnorm = function () {
+
+        if (!houseHold.numberOfPersons()) {
+            return 0;
+        }
+        var sum = 0;
+        for (var a = 0; a &lt; houseHold.getKids().length; a++) {
+            switch (houseHold.getKids()[a].age) {
+                case 0:
+                    sum += 1740;
+                    break;
+                case 1:
+                case 2:
+                    sum += 1980;
+                    break;
+                case 3:
+                    sum += 1730;
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    sum += 1980;
+                    break;
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                    sum += 2410;
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                    sum += 2840;
+                    break;
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                    sum += 3250;
+                    break;
+                case 19:
+                case 20:
+                    sum += 3280;
+            }
+        }
+
+
+        sum += this.commonOutcome(houseHold);
+
+        // Vuxna
+        if (houseHold.getGrownups().length == 1) {
+            sum += 2950;
+        } else if (houseHold.getGrownups().length > 1) {
+            var grownupCount = houseHold.getGrownups().length;
+            sum += 5320;
+            grownupCount = grownupCount - 2;
+            for (var a = 0; a &lt; grownupCount; a++) {
+                sum += 2950;
+            }
+        }
+        return sum;
+
+
+    };
+    /**
+     * Räknar ut hur mycket försörjningstöd hela hushållet har rätt till.
+     * @returns {Number}
+     */
+    this.totalCalc = function () {
+        var income = (houseHold.totalCalc() + tax.totalCalc());
+
+        // Jobbstimulans
+
+        if (houseHold.getPersons()[0].getData("langtidssoc")) {
+            income = income * 0.75;
+
+        }
+        var totalIncome = income + bostadsBidrag.totalCalc() + studieBidrag.totalCalc() + barnBidrag.totalCalc();
+
+        var socialBidrag = (this.getRiksnorm() + houseHold.getHouse().getRent()) - (totalIncome);
+        socialBidrag = Math.max(0, socialBidrag);
+
+        return Math.round(socialBidrag);
+
+    }
+}
+marginalCalc.addModule("socialBidrag", socialBidrag, 200);
+marginalCalc.scriptLoader.loadComplete("socialbidrag");
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="barnBidrag.html">barnBidrag</a></li><li><a href="bostadsBidrag.html">bostadsBidrag</a></li><li><a href="houseHold.html">houseHold</a></li><li><a href="Housing.html">Housing</a></li><li><a href="Person.html">Person</a></li><li><a href="socialBidrag.html">socialBidrag</a></li><li><a href="studieBidrag.html">studieBidrag</a></li><li><a href="tax.html">tax</a></li></ul><h3>Namespaces</h3><ul><li><a href="marginalCalc.html">marginalCalc</a></li></ul><h3>Interfaces</h3><ul><li><a href="Module.html">Module</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta1</a> on Sat Jan 31 2015 01:48:36 GMT+0100 (CET)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
