@@ -34,7 +34,8 @@
             var kids = houseHold.getPersonsBelowAge(16);
 
             for (var a = 0; a < kids.length; a++) {
-                totalBarnbidrag += kids[a].setData("barnbidrag", Barnbidrag);
+                kids[a].setData("barnbidrag", Barnbidrag);
+                totalBarnbidrag += Barnbidrag;
             }
             return totalBarnbidrag;
         };
