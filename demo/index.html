@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Titel</title>
+    <title>Marginaleffektskalkylator</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -406,7 +406,6 @@
                 /*
                  * Marginaleffekt för totala inkomster, utan jobbstimulans
                  */
-                person.langtidsSoc = false;
                 marginalGraphData[a] = {
                     x: person.salary,
                     y: marginalCalc.marginalEff(salaryIncrement, totalCalc["totalCalc"], oldTotal)
@@ -415,11 +414,10 @@
                 /*
                  * Marginaleffekt för totala inkomster, med jobbstumulans
                  */
-                person.langtidsSoc = true;
-               /* graphMarginalLangtid[a] = {
+               graphMarginalLangtid[a] = {
                     x: person.salary,
-                    y: marginalCalc.marginalCalc(salaryIncrement, totalCalcLangTid["totalCalc"], oldTotalLangtid)
-                };*/
+                    y: marginalCalc.marginalEff(salaryIncrement, totalCalcLangTid["totalCalc"], oldTotalLangtid)
+                };
                 oldTotalLangtid = totalCalcLangTid["totalCalc"];
 
                 /*
@@ -431,7 +429,6 @@
                 };
                 oldTax = totalCalc["houseHold"] + totalCalc["tax"];
 
-                totalCalc = totalCalcLangTid;
                 graphSalaryData[a] = {x: person.salary, y: totalCalc["houseHold"] + totalCalc["tax"]};
 
                 if (totalCalc["barnBidrag"])

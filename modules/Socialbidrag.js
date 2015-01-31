@@ -137,7 +137,7 @@ function socialBidrag(houseHold, tax, barnBidrag, studieBidrag, bostadsBidrag) {
 
         // Jobbstimulans
 
-        if (houseHold.getPersons()[0].getData("langtidssoc")) {
+        if (houseHold.getPersons()[0].getData("langtidsSoc")) {
             income = income * 0.75;
 
         }
