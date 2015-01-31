@@ -56,5 +56,4 @@ Hela funktionen ser nu ut som:
     });
 
 # Vad mer kan du göra?
-För fler exempel på vad man kan göra i väntan på en full dokumentation av alla funktioner så kan du spana in demot som inkluderas med paketet.
-
+För mer information kan du läsa [dokumentationen](http://hejahanif.se/marginal-calc/docs) eller spana in ett [demo](http://hejahanif.se/marginal-calc/)
