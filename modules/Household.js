@@ -64,8 +64,37 @@
             return this.getHouseHoldTaxableIncome() / 12;
         };
         /**
-         * Ger dig en array med alla personer i hushållet under definierad ålder.
-         * @param {Number} age Ålder
+         * Gives you an array with all the persons in the household above the age you requested.
+         * @param {Number} age Age
+         * @returns {Person[]} Persons above defined param age
+         */
+        this.getPersonsAboveAge = function (age) {
+            filteredPersons = [];
+            this.getPersons().forEach(function (person) {
+                if (person.age > age) {
+                    filteredPersons.push(person);
+                }
+            });
+            return filteredPersons;
+        };
+        /**
+         * Gives you an array with all the persons in the household between the ages you requested.
+         * @param {Number} lowAge the lower age of the interval
+         * @param {Number} upperAge the upper age of the interval
+         * @returns {Person[]} Persons between the defined ages
+         */
+        this.getPersonsBetweenAge = function (lowAge, upperAge) {
+            filteredPersons = [];
+            this.getPersons().forEach(function (person) {
+                if (person.age > lowAge && person.age < upperAge) {
+                    filteredPersons.push(person);
+                }
+            });
+            return filteredPersons;
+        };
+        /**
+         * Gives you an array with all the persons in the household below the age you requested.
+         * @param {Number} age Age
          * @returns {Person[]} Persons below defined param age
          */
         this.getPersonsBelowAge = function (age) {
