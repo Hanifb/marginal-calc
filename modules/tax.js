@@ -14,29 +14,29 @@
  */
 function tax(houseHold) {
     /**
-     * Prisbasbeloppet för 2014
+     * Prisbasbeloppet för 2018
      * @default
      * @type {Number}
      */
-    var PBB = 44400; // 2014 Prisbasbelopp
+    var PBB = 45500;
     /**
-     * Inkomstbasbeloppet för 2014
+     * Inkomstbasbeloppet för 2018
      * @default
      * @type {Number}
      */
-    var IBB = 56900; // 2014 Inkomstbasbelopp
+    var IBB = 62500;
     /**
-     * Statlig inkomstskatt, brytpunkt  2014
+     * Statlig inkomstskatt, brytpunkt 2018
      * @default
      * @type {Number}
      */
-    var SKIKT1 = 420800; // 2014 Statlig inkomstskatt, brytpunkt
+    var SKIKT1 = 455300;
     /**
-     * Värnskatt, brytpunkt  2014
+     * Värnskatt, brytpunkt  2018
      * @default
      * @type {Number}
      */
-    var SKIKT2 = 602600; //2014 Värnskatt, brytpunkt
+    var SKIKT2 = 662300;
     /**
      * Kommunalskatt
      * @default

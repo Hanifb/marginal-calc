@@ -14,7 +14,7 @@
      * @param {houseHold} houseHold Hushållet som kalkyleringarna ska göras på.
      */
     function barnBidrag(houseHold) {
-        const Barnbidrag = 1050;
+        const Barnbidrag = 1250;
         /**
          * Räknar ut hela hushållets barnbidrag och flerbarnstillägg
          * @returns {Number}
@@ -55,13 +55,14 @@
                     tillagg = 150;
                     break;
                 case 3:
-                    tillagg = 604;
+                    tillagg = 730;
                     break;
                 case 4:
-                    tillagg = 1614;
+                    tillagg = 1740;
+                    break;
                 default:
                     // 1050 kr för varje barn över 4 så adderar du
-                    var flerbarnsTillag = 2864;
+                    var flerbarnsTillag = 2990;
                     for (var i = 0; i < (persons.length - 5); i++) {
                         flerbarnsTillag += 1250;
                     }
@@ -84,7 +85,15 @@
      * @param {houseHold} houseHold
      */
     function studieBidrag(houseHold) {
-        const Studiebidrag = 1050;
+        let Studiebidrag = 1050;
+
+        const date = new Date();
+
+        if (date.getFullYear() >= 2018 && date.getMonth() >= 6 && date.getDate() >= 1) {
+            // Studiebidraget höjs den 1 juli 2018. (getMonth är 0-baserat)
+            Studiebidrag = 1250;
+        }
+
         /**
          * Räknar ut hela Studiebidraget
          * @returns {Number}
@@ -104,9 +113,9 @@
             var extra = 0;
             if (income < 85000) {
                 extra = 855;
-            } else if (income > 104999) {
+            } else if (income <= 104999) {
                 extra = 570;
-            } else if (income > 124999) {
+            } else if (income <= 124999) {
                 extra = 285;
             }
             var persons = houseHold.getPersons();
